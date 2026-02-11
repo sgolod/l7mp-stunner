@@ -104,7 +104,7 @@ The feature is exposed via the command line flag `--udp-thread-num=<THREAD_NUMBE
 
 ## License
 
-Copyright 2021-2023 by its authors. Some rights reserved. See [AUTHORS](../../AUTHORS).
+Copyright 2021-2026 by its authors. Some rights reserved. See [AUTHORS](../../AUTHORS).
 
 MIT License - see [LICENSE](../../LICENSE) for full text.
 

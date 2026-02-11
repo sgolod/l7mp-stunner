@@ -71,7 +71,7 @@ For instance, the below will use the context `prod-europe` from the kubeconfig f
 
 ## License
 
-Copyright 2021-2023 by its authors. Some rights reserved. See [AUTHORS](../../AUTHORS).
+Copyright 2021-2026 by its authors. Some rights reserved. See [AUTHORS](../../AUTHORS).
 
 MIT License - see [LICENSE](../../LICENSE) for full text.
 
