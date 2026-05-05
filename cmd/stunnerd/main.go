@@ -27,6 +27,7 @@ func main() {
 	os.Args[0] = "stunnerd"
 	var config = flag.StringP("config", "c", "", "Config origin, either a valid address in the format IP:port, or HTTP URL to the CDS server, or literal \"k8s\" to discover the CDS server from Kubernetes, or a proper file name URI in the format file://<path-to-config-file> (overrides: STUNNER_CONFIG_ORIGIN)")
 	var level = flag.StringP("log", "l", "", "Log level (format: <scope>:<level>, overrides: PION_LOG_*, default: all:INFO)")
+	var logFormat = flag.String("log-format", "text", `Log output format: "text" (default) or "json"`)
 	var id = flag.StringP("id", "i", "", "Id for identifying with the CDS server (format: <namespace>/<name>, overrides: STUNNER_NAMESPACE/STUNNER_NAME, default: <default/stunnerd-hostname>)")
 	var watch = flag.BoolP("watch", "w", false, "Watch config file for updates (default: false)")
 	var udpThreadNum = flag.IntP("udp-thread-num", "u", 0,
@@ -77,7 +78,7 @@ func main() {
 
 	st := stunner.NewStunner(stunner.Options{
 		Name:                        *id,
-		LogOptions:                  stunner.LogOptions{Level: logLevel},
+		LogOptions:                  stunner.LogOptions{Level: logLevel, Format: *logFormat},
 		DryRun:                      *dryRun,
 		NodeName:                    nodeName,
 		UDPListenerThreadNum:        *udpThreadNum,

@@ -41,10 +41,10 @@ go build -o stunnerd cmd/stunnerd/main.go
 
 ### Usage
 
-The below command will open a `stunnerd` UDP listener at `127.0.0.1:5000`, set `static` authentication using the username/password pair `user1/passwrd1`, and raise the debug level to the maximum.
+The below command will open a `stunnerd` UDP listener at `127.0.0.1:5000`, set `static` authentication using the username/password pair `user1/passwrd1`, and raise the debug level to the maximum and set the logging format to JSON.
 
 ```console
-./stunnerd --log=all:TRACE turn://user1:passwd1@127.0.0.1:5000
+./stunnerd --log=all:TRACE --log-format=json turn://user1:passwd1@127.0.0.1:5000
 ```
 
 Alternatively, run `stunnerd` in verbose mode with the config file taken from `cmd/stunnerd/stunnerd.conf`. Adding the flag `-w` will enable watch mode.

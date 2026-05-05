@@ -59,15 +59,20 @@ type Stunner struct {
 // healthchecking is enabled). Calling program should catch SIGTERM signals and call Shutdown(),
 // which will keep on serving connections but will fail readiness probes.
 func NewStunner(options Options) *Stunner {
-	logger := logger.NewLoggerFactory(DefaultLogLevel)
-	if options.LogOptions.Level != "" {
-		logger.SetLevel(options.LogOptions.Level)
+	var logFactory logger.LoggerFactory
+	if options.LogOptions.Format == "json" {
+		logFactory = logger.NewJSONLoggerFactory(DefaultLogLevel)
+	} else {
+		logFactory = logger.NewLoggerFactory(DefaultLogLevel)
 	}
-	log := logger.NewLogger("stunner")
+	if options.LogOptions.Level != "" {
+		logFactory.SetLevel(options.LogOptions.Level)
+	}
+	log := logFactory.NewLogger("stunner")
 
 	r := options.Resolver
 	if r == nil {
-		r = resolver.NewDnsResolver("dns-resolver", logger)
+		r = resolver.NewDnsResolver("dns-resolver", logFactory)
 	}
 
 	var vnet transport.Net
@@ -110,7 +115,7 @@ func NewStunner(options Options) *Stunner {
 	s := &Stunner{
 		name:             id,
 		version:          stnrv1.ApiVersion,
-		logger:           logger,
+		logger:           logFactory,
 		log:              log,
 		suppressRollback: options.SuppressRollback,
 		dryRun:           options.DryRun,
@@ -129,19 +134,19 @@ func NewStunner(options Options) *Stunner {
 	}
 
 	s.adminManager = manager.NewManager("admin-manager",
-		object.NewAdminFactory(options.DryRun, s.NewReadinessHandler(), s.NewStatusHandler(), logger), logger)
+		object.NewAdminFactory(options.DryRun, s.NewReadinessHandler(), s.NewStatusHandler(), logFactory), logFactory)
 	s.authManager = manager.NewManager("auth-manager",
-		object.NewAuthFactory(logger), logger)
+		object.NewAuthFactory(logFactory), logFactory)
 	s.listenerManager = manager.NewManager("listener-manager",
-		object.NewListenerFactory(vnet, s.NewRealmHandler(), statsHandler, logger), logger)
+		object.NewListenerFactory(vnet, s.NewRealmHandler(), statsHandler, logFactory), logFactory)
 	s.clusterManager = manager.NewManager("cluster-manager",
-		object.NewClusterFactory(r, statsHandler, logger), logger)
+		object.NewClusterFactory(r, statsHandler, logFactory), logFactory)
 	s.quotaHandler = s.NewQuotaHandler()
 
 	telemetryCallbacks := telemetry.Callbacks{
 		GetAllocationCount: func() int64 { return s.GetActiveConnections() },
 	}
-	t, err := telemetry.New(telemetryCallbacks, s.dryRun, logger.NewLogger("metrics"))
+	t, err := telemetry.New(telemetryCallbacks, s.dryRun, logFactory.NewLogger("metrics"))
 	if err != nil {
 		log.Errorf("Could not initialize metric provider: %s", err.Error())
 		return nil

@@ -553,9 +553,10 @@ func TestRateLimitedLogger(t *testing.T) {
 		t.Run(c.name, func(t *testing.T) {
 			// t.Logf("-------------- Running test: %s -------------", c.name)
 
-			// create
-			loggerFactory := NewRateLimitedLoggerFactory(NewLoggerFactory(c.level), c.limit, c.burst)
-			loggerFactory.Writer = logBuffer
+			// create: set the target writer before wrapping it with the rate limiter
+			loggerFactory := NewLoggerFactory(c.level)
+			loggerFactory.SetWriter(logBuffer)
+			loggerFactory = NewRateLimitedLoggerFactory(loggerFactory, c.limit, c.burst)
 			logreset()
 
 			// prepare
